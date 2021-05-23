@@ -1,1 +1,1 @@
-"""The solaxcloud component."""
+"""The SolaxCloud Component."""

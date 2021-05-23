@@ -1,18 +1,22 @@
 # SolaxCloud integration for Home Assistant.
 
-Solax Cloud integration based on the (now publicly accssible) SolaxCloud API.
-This component is basically a rewrite of [thomascys/solaxcloud](https://github.com/thomascys/solaxcloud) which used the old system.
-You need:
+Solax Cloud integration based on the SolaxCloud API.
+This component is basically a rewrite of [thomascys/solaxcloud]
+(https://github.com/thomascys/solaxcloud) which used the old system.
+You will need:
 
-- The API Key which is accessible in the Service menu of your SolaxCloud.
-- The Inverter Serial Number (SN) is the 10 character Registration No. of the
+- An API key: Which can be created from the online portal
+  (https://www.solaxcloud.com/#/api) under the 'Service > API' menu
+- The Inverter Serial Number (SN): The 10 character Registration No. of the
   specific inverter (see the Inverter's menu in SolaxCloud)
 
 ## Installation
 
+This component current only support manual installation.
 - Place this directory in `/config/custom_components`. If `custom_components`
-  does not exist, you have to create it.
+  does not exist, you will have to create it.
 - Add the sensor to your configuration.yaml:
+
 ```yaml
 sensor:
   - platform: solaxcloud
@@ -21,40 +25,45 @@ sensor:
     sn: YOUR_INVERTER_SN
 ```
 - Verify that the custom entities are available in home assistant (Total Yield,
-  Daily Yield and AC Power etc).
+  Daily Yield, AC Power etc).
 
 ## Multiple Inverters
 
-You might have multiple inverters in your PV installation. By simply adding the
-same configuration again, but changing the inverter SN, you can add more
-inverters to home assistant. Also, you might want a combined value of your
-inverters, this can be achieved with home assistants template platform
+If you have multiple inverters in your PV installation they can be added by
+creating additional sensors and changing the inverter SN:
 
 ```yaml
 sensor:
-  # ...
   - platform: solaxcloud
     name: Inverter 2
     api_key: YOUR_API_KEY
     sn: YOUR_INVERTER_2_SN
-
-  - platform: template
-    sensors:
-      total_yield:
-        friendly_name: 'Total Yield'
-        icon_template: 'mdi:solar-power'
-        unit_of_measurement: 'kWh'
-        value_template: "{{ states('sensor.inverter_1.total_yield')|float + states('sensor.inverter_2.total_yield')|float }}"
-
-      daily_yield:
-        friendly_name: 'Daily Yield'
-        icon_template: 'mdi:solar-power'
-        unit_of_measurement: 'kWh'
-        value_template: "{{ states('sensor.inverter_1.daily_yield')|float + states('sensor.inverter_2.daily_yield')|float }}"
-
-      ac_power:
-        friendly_name: 'AC Power'
-        icon_template: 'mdi:solar-power'
-        unit_of_measurement: 'kW'
-        value_template: "{{ states('sensor.inverter_1.ac_power')|float + states('sensor.inverter_2.ac_power')|float }}"
 ```
+If you want the combined value of your inverters, this can be achieved by using
+Home Assistant's template platform:
+
+```yaml
+- platform: template
+  sensors:
+    total_yield:
+      friendly_name: 'Total Yield'
+      icon_template: 'mdi:solar-power'
+      unit_of_measurement: 'kWh'
+      value_template: "{{ states('sensor.inverter_1_total_yield')|float + states('sensor.inverter_2_total_yield')|float }}"
+
+    daily_yield:
+      friendly_name: 'Daily Yield'
+      icon_template: 'mdi:solar-power'
+      unit_of_measurement: 'kWh'
+      value_template: "{{ states('sensor.inverter_1_daily_yield')|float + states('sensor.inverter_2_daily_yield')|float }}"
+
+    ac_power:
+      friendly_name: 'AC Power'
+      icon_template: 'mdi:solar-power'
+      unit_of_measurement: 'kW'
+      value_template: "{{ states('sensor.inverter_1_ac_power')|float + states('sensor.inverter_2_ac_power')|float }}"
+```
+## Documentation
+
+Documentation for the API can be found on the SolaxCloud website:
+https://www.eu.solaxcloud.com/phoebus/resource/files/userGuide/Solax_API.pdf
