@@ -51,6 +51,44 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
                   PowerDC2Sensor(hass, solax_cloud),
                   ], True)
 
+# Dictionary table to convert Inverter Type Code to Inverter Type (Table 4)
+def inverter_type(code):
+    switch = {
+        '1'  : 'X1-LX',
+        '2'  : 'X-Hybrid',
+        '3'  : 'X1-Hybrid/Fit',
+        '4'  : 'X1-Boost/Air/Mini',
+        '5'  : 'X3-Hybrid/Fit',
+        '6'  : 'X3-20K/30K',
+        '7'  : 'X3-MIC/PRO',
+        '8'  : 'X1-Smart',
+        '9'  : 'X1-AC',
+        '10' : 'A1-Hybrid',
+        '11' : 'A1-Grid',
+        '12' : 'J1-ESS'
+    }
+    return 'Unknown' if code not in switch else switch.get(code,1)
+
+# Dictionary table to convert Status Code to Inverter Status (Table 5)
+def inverter_status(code):
+    switch = {
+        '100' : 'Wait Mode',
+        '101' : 'Check Mode',
+        '102' : 'Normal Mode',
+        '103' : 'Fault Mode',
+        '104' : 'Permanent Fault Mode',
+        '105' : 'Update Mode',
+        '106' : 'EPS Check Mode',
+        '107' : 'EPS Mode',
+        '108' : 'Self-Test Mode',
+        '109' : 'Idle Mode',
+        '110' : 'Standby Mode',
+        '111' : 'Pv Wake Up Bat Mode',
+        '112' : 'Gen Check Mode',
+        '113' : 'Gen Run Mode'
+    }
+    return 'Unknown' if code not in switch else switch.get(code,1)
+
 class SolaxCloud:
     def __init__(self, hass, name, api_key, sn):
         self.hass = hass
@@ -79,6 +117,7 @@ class SolaxCloud:
             except requests.exceptions.ConnectionError as e:
                 self.logger.error(str(e))
                 self.data = {}
+
 
 # Each sensor class is named using the convention: {API items}Sensor
 # This comes from Table 3 of the API documentation
@@ -351,7 +390,7 @@ class SocSensor(Entity):
 class Peps1Sensor(Entity):
     # ?? -- (in watts) ??
     def __init__(self, hass, solax_cloud):
-        self._name = solax_cloud.inverter_name + ' ESP R'
+        self._name = solax_cloud.inverter_name + ' EPS R'
         self.hass = hass
         self.solax_cloud = solax_cloud
 
@@ -384,7 +423,7 @@ class Peps1Sensor(Entity):
 class Peps2Sensor(Entity):
     # ?? -- (in watts) ??
     def __init__(self, hass, solax_cloud):
-        self._name = solax_cloud.inverter_name + ' ESP S'
+        self._name = solax_cloud.inverter_name + ' EPS S'
         self.hass = hass
         self.solax_cloud = solax_cloud
 
@@ -417,7 +456,7 @@ class Peps2Sensor(Entity):
 class Peps3Sensor(Entity):
     # ?? -- (in watts) ??
     def __init__(self, hass, solax_cloud):
-        self._name = solax_cloud.inverter_name + ' ESP T'
+        self._name = solax_cloud.inverter_name + ' EPS T'
         self.hass = hass
         self.solax_cloud = solax_cloud
 
@@ -460,40 +499,8 @@ class InverterTypeSensor(Entity):
 
     @property
     def state(self):
-        data_raw = self.solax_cloud.data.get('inverterType')
-
-        # Convert data into meaningful information (code to model)
-        data = ''
-        if(data_raw == '1'):
-            data = 'X1-LX'
-        elif(data_raw == '2'):
-            data = 'X-Hybrid'
-        elif(data_raw == '3'):
-            data = 'X1-Hybrid/Fit'
-        elif(data_raw == '4'):
-            data = 'X1-Boost/Air/Mini'
-        elif(data_raw == '5'):
-            data = 'X3-Hybrid/Fit'
-        elif(data_raw == '6'):
-            data = 'X3-20K/30K'
-        elif(data_raw == '7'):
-            data = 'X3-MIC/PRO'
-        elif(data_raw == '8'):
-            data = 'X1-Smart'
-        elif(data_raw == '9'):
-            data = 'X1-AC'
-        elif(data_raw == '10'):
-            data = 'A1-Hybrid'
-        elif(data_raw == '11'):
-            data = 'A1-Fit'
-        elif(data_raw == '12'):
-            data = 'A1-Grid'
-        elif(data_raw == '13'):
-            data = 'J1-ESS'
-        else:
-            data = 'Unknown'
-
-        return data
+        data = self.solax_cloud.data.get('inverterType')
+        return inverter_type(data)
 
     @property
     def icon(self):
@@ -521,42 +528,8 @@ class InverterStatusSensor(Entity):
 
     @property
     def state(self):
-        data_raw = self.solax_cloud.data.get('inverterStatus')
-
-        # Convert data into meaningful information (code to status)
-        data = ''
-        if(data_raw == '100'):
-            data = 'Wait Mode'
-        elif(data_raw == '101'):
-            data = 'Check Mode'
-        elif(data_raw == '102'):
-            data = 'Normal Mode'
-        elif(data_raw == '103'):
-            data = 'Fault Mode'
-        elif(data_raw == '104'):
-            data = 'Permanent Fault Mode'
-        elif(data_raw == '105'):
-            data = 'Update Mode'
-        elif(data_raw == '106'):
-            data = 'EPS Check Mode'
-        elif(data_raw == '107'):
-            data = 'EPS Mode'
-        elif(data_raw == '108'):
-            data = 'Self-Test Mode'
-        elif(data_raw == '109'):
-            data = 'Idle Mode'
-        elif(data_raw == '110'):
-            data = 'Standby Mode'
-        elif(data_raw == '111'):
-            data = 'Pv Wake Up Bat Mode'
-        elif(data_raw == '112'):
-            data = 'Gen Check Mode'
-        elif(data_raw == '113'):
-            data = 'Gen Run Mode'
-        else:
-            data = 'Unknown'
-
-        return data
+        data = self.solax_cloud.data.get('inverterStatus')
+        return inverter_status(data)
 
     @property
     def icon(self):
