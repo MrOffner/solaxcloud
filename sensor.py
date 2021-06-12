@@ -18,40 +18,46 @@ MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
 CONF_NAME = "name"
 CONF_API_KEY = "api_key"
 CONF_SN = "sn"
+CONF_HAS_BATTERY = "battery"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_NAME): cv.string,
         vol.Required(CONF_API_KEY): cv.string,
-        vol.Required(CONF_SN): cv.string
+        vol.Required(CONF_SN): cv.string,
+        vol.Optional(CONF_HAS_BATTERY, default=False): bool
     }
 )
 
 # Set up the SolaxCloud platform
 def setup_platform(hass, config, add_entities, discovery_info=None):
     solax_cloud = SolaxCloud(
-        hass, config[CONF_NAME], config[CONF_API_KEY], config[CONF_SN])
+        hass, config[CONF_NAME], config[CONF_API_KEY], config[CONF_SN], config[CONF_HAS_BATTERY])
     # Add the sensors to the platform
-    add_entities([ACPowerSensor(hass, solax_cloud),
-                  YieldTodaySensor(hass, solax_cloud),
+    add_entities([YieldTodaySensor(hass, solax_cloud),
                   YieldTotalSensor(hass, solax_cloud),
                   FeedinPowerSensor(hass, solax_cloud),
                   FeedinEnergySensor(hass, solax_cloud),
                   ConsumeEnergySensor(hass, solax_cloud),
                   FeedinPowerM2Sensor(hass, solax_cloud),
-                  SocSensor(hass, solax_cloud),
-                  Peps1Sensor(hass, solax_cloud),
-                  Peps2Sensor(hass, solax_cloud),
-                  Peps3Sensor(hass, solax_cloud),
                   InverterTypeSensor(hass, solax_cloud),
                   InverterStatusSensor(hass, solax_cloud),
                   UpdateTimeSensor(hass, solax_cloud),
-                  BatPowerSensor(hass, solax_cloud),
                   PowerDC1Sensor(hass, solax_cloud),
                   PowerDC2Sensor(hass, solax_cloud),
                   ], True)
 
-# Dictionary table to convert Inverter Type Code to Inverter Type (Table 4)
+    # Only add the battery sensors if user indicates that have storage available
+    if (config[CONF_HAS_BATTERY]):
+        add_entities([ACPowerSensor(hass, solax_cloud),
+                      SocSensor(hass, solax_cloud),
+                      Peps1Sensor(hass, solax_cloud),
+                      Peps2Sensor(hass, solax_cloud),
+                      Peps3Sensor(hass, solax_cloud),
+                      BatPowerSensor(hass, solax_cloud),
+                      ], True)
+
+# Dictionary table that converts Inverter Type Code into Inverter Type (Table 4)
 def inverter_type(code):
     switch = {
         '1'  : 'X1-LX',
@@ -67,9 +73,9 @@ def inverter_type(code):
         '11' : 'A1-Grid',
         '12' : 'J1-ESS'
     }
-    return 'Unknown' if code not in switch else switch.get(code,1)
+    return 'Unknown' if code not in switch else switch.get(code, 1)
 
-# Dictionary table to convert Status Code to Inverter Status (Table 5)
+# Dictionary table that converts Status Code into Inverter Status (Table 5)
 def inverter_status(code):
     switch = {
         '100' : 'Wait Mode',
@@ -87,7 +93,7 @@ def inverter_status(code):
         '112' : 'Gen Check Mode',
         '113' : 'Gen Run Mode'
     }
-    return 'Unknown' if code not in switch else switch.get(code,1)
+    return 'Unknown' if code not in switch else switch.get(code, 1)
 
 class SolaxCloud:
     def __init__(self, hass, name, api_key, sn):

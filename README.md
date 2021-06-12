@@ -3,19 +3,19 @@
 Solax Cloud integration based on the SolaxCloud API.
 This component is basically a rewrite of [thomascys/solaxcloud]
 (https://github.com/thomascys/solaxcloud) which used the old system.
-You will need:
 
+To use this component you will need the following:
 - An API key: Which can be created from the online portal
   (https://www.solaxcloud.com/#/api) under the 'Service > API' menu
-- The Inverter Serial Number (SN): The 10 character Registration No. of the
+- The Inverter's Serial Number (SN): The 10 character Registration No. of the
   specific inverter (see the Inverter's menu in SolaxCloud)
 
 ## Installation
 
-This component current only support manual installation.
+This component currently only supports manual installation:
 - Place this directory in `/config/custom_components`. If `custom_components`
   does not exist, you will have to create it.
-- Add the sensor to your configuration.yaml:
+- Add the sensor to your configuration.yaml file:
 
 ```yaml
 sensor:
@@ -26,6 +26,15 @@ sensor:
 ```
 - Verify that the custom entities are available in home assistant (Total Yield,
   Daily Yield, AC Power etc).
+
+
+## Config
+| Key | Type | Required | Value | Description |
+|---|---|---|---|---|
+| 'name' | string | true | | A unique name for the Solax inverter |
+| 'api_key' | string | true | | The unique API key generate from the online Solax Cloud portal |
+| 'sn' | string | true | | The serial number of the inverter. |
+| 'battery' | boolean | false | default: 'False' | Is there battery storage attached to the inverter? |
 
 ## Multiple Inverters
 
@@ -40,7 +49,7 @@ sensor:
     sn: YOUR_INVERTER_2_SN
 ```
 If you want the combined value of your inverters, this can be achieved by using
-Home Assistant's template platform:
+Home Assistant's template platform to combine the values together:
 
 ```yaml
 - platform: template
