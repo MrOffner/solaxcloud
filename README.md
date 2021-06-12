@@ -31,10 +31,10 @@ sensor:
 ## Config
 | Key | Type | Required | Value | Description |
 |---|---|---|---|---|
-| 'name' | string | true | | A unique name for the Solax inverter |
-| 'api_key' | string | true | | The unique API key generate from the online Solax Cloud portal |
-| 'sn' | string | true | | The serial number of the inverter. |
-| 'battery' | boolean | false | default: 'False' | Is there battery storage attached to the inverter? |
+| `name` | string | true | | A unique name for the Solax inverter |
+| `api_key` | string | true | | The unique API key generate from the online Solax Cloud portal |
+| `sn` | string | true | | The serial number of the inverter. |
+| `battery` | boolean | false | default: `False` | Is there battery storage attached to the inverter? |
 
 ## Multiple Inverters
 
