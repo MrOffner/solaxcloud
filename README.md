@@ -75,4 +75,9 @@ Home Assistant's template platform to combine the values together:
 ## Documentation
 
 Documentation for the API can be found on the SolaxCloud website:
-https://www.eu.solaxcloud.com/phoebus/resource/files/userGuide/Solax_API.pdf
+https://www.solaxcloud.com/user_api/SolaxCloud_User_Monitoring_API_V6.1.pdf
+
+## Notes
+
+- My system only contains a single inverter with no battery storage, so much of this is guesswork.
+- I am not in any way an electrical engineer so have a very limited understanding of the terminology.

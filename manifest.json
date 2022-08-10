@@ -1,8 +1,8 @@
 {
     "domain": "solaxcloud",
     "name": "Solax Cloud Integration",
-    "version": "2.2.3",
-    "documentation": "https://www.eu.solaxcloud.com/phoebus/resource/files/userGuide/Solax_API.pdf",
+    "version": "3.0.0",
+    "documentation": "https://www.solaxcloud.com/user_api/SolaxCloud_User_Monitoring_API_V6.1.pdf",
     "dependencies": [],
     "codeowners": ["@MrOffner","@dbucher97"],
     "requirements": [],
